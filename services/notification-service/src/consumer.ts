@@ -1,9 +1,9 @@
 import amqplib from "amqplib";
 import { db } from "./db";
 import { notifications } from "./db/schema";
+import { broadcastNotification } from "./realtime";
 
-const RABBITMQ_URL =
-  process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
+const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672";
 const EXCHANGE_NAME = "suilens.events";
 const QUEUE_NAME = "notification-service.order-events";
 
@@ -31,8 +31,7 @@ export async function startConsumer() {
           console.log(`Received event: ${event.event}`, event.data);
 
           if (event.event === "order.placed") {
-            const { orderId, customerName, customerEmail, lensName } =
-              event.data;
+            const { orderId, customerName, customerEmail, lensName } = event.data;
 
             await db.insert(notifications).values({
               orderId,
@@ -42,6 +41,16 @@ export async function startConsumer() {
             });
 
             console.log(`Notification recorded for order ${orderId}`);
+            broadcastNotification({
+              type: "order.placed",
+              timestamp: new Date().toISOString(),
+              data: {
+                orderId,
+                customerName,
+                customerEmail,
+                lensName,
+              },
+            });
           }
 
           channel.ack(msg);
@@ -54,17 +63,12 @@ export async function startConsumer() {
       return;
     } catch (error) {
       retries++;
-      console.warn(
-        `Failed to connect to RabbitMQ (attempt ${retries}/${maxRetries}):`,
-        (error as Error).message,
-      );
+      console.warn(`Failed to connect to RabbitMQ (attempt ${retries}/${maxRetries}):`, (error as Error).message);
       if (retries < maxRetries) {
         await new Promise((resolve) => setTimeout(resolve, retryDelay));
       }
     }
   }
 
-  console.error(
-    "Failed to connect to RabbitMQ after maximum retries. Continuing without consumer.",
-  );
+  console.error("Failed to connect to RabbitMQ after maximum retries. Continuing without consumer.");
 }

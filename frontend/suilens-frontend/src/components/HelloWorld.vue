@@ -44,11 +44,11 @@
     </v-card>
   </v-container>
 </template>
-
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 
 const notifications = ref([]);
+let socket = null;
 
 function formatTime(timestamp) {
   const date = new Date(timestamp);
@@ -62,4 +62,38 @@ function formatTime(timestamp) {
 function clearNotifications() {
   notifications.value = [];
 }
+
+onMounted(() => {
+  socket = new WebSocket("ws://localhost:3003/ws");
+
+  socket.onopen = () => {
+    console.log("WebSocket connected");
+  };
+
+  socket.onmessage = (event) => {
+    try {
+      const payload = JSON.parse(event.data);
+
+      if (payload.type === "order.placed") {
+        notifications.value.unshift(payload);
+      }
+    } catch (error) {
+      console.error("Failed to parse WebSocket message:", error);
+    }
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+  };
+
+  socket.onclose = () => {
+    console.log("WebSocket disconnected");
+  };
+});
+
+onBeforeUnmount(() => {
+  if (socket) {
+    socket.close();
+  }
+});
 </script>
