@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: SuiLens Order Service API
+  version: 1.0.0
+  description: API untuk membuat dan melihat order lensa pada SuiLens.
+servers:
+  - url: http://localhost:3002
+tags:
+  - name: Orders
+    description: Endpoint order
+  - name: Health
+    description: Health check service
+
+paths:
+  /api/orders:
+    post:
+      tags:
+        - Orders
+      summary: Create new order
+      description: Membuat order baru dan mem-publish event order.placed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+            example:
+              customerName: Rakha Davin
+              customerEmail: 2206082650@gmail.com
+              lensId: b7daafb5-b12e-4e0f-b950-cd0f83878db3
+              startDate: "2025-03-01"
+              endDate: "2025-03-05"
+      responses:
+        '201':
+          description: Order berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Request tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Lens tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Gagal membuat order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Orders
+      summary: Get all orders
+      description: Mengambil seluruh data order.
+      responses:
+        '200':
+          description: Daftar order berhasil diambil
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /api/orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get order by ID
+      description: Mengambil detail satu order berdasarkan ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID order
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detail order berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Mengecek apakah order service berjalan normal.
+      responses:
+        '200':
+          description: Service sehat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+components:
+  schemas:
+    CreateOrderRequest:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+          format: email
+        lensId:
+          type: string
+          format: uuid
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+      required:
+        - customerName
+        - customerEmail
+        - lensId
+        - startDate
+        - endDate
+
+    LensSnapshot:
+      type: object
+      properties:
+        dayPrice:
+          type: string
+          example: "450000.00"
+        modelName:
+          type: string
+        manufacturerName:
+          type: string
+      required:
+        - dayPrice
+        - modelName
+        - manufacturerName
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+          format: email
+        lensId:
+          type: string
+          format: uuid
+        lensSnapshot:
+          $ref: '#/components/schemas/LensSnapshot'
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        totalPrice:
+          type: string
+          example: "1800000.00"
+        status:
+          type: string
+          example: pending
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - customerName
+        - customerEmail
+        - lensId
+        - lensSnapshot
+        - startDate
+        - endDate
+        - totalPrice
+        - status
+        - createdAt
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: order-service
+      required:
+        - status
+        - service
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

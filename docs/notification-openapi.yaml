@@ -1,0 +1,40 @@
+openapi: 3.0.3
+info:
+  title: SuiLens Notification Service API
+  version: 1.0.0
+  description: API untuk notification service pada SuiLens.
+servers:
+  - url: http://localhost:3003
+tags:
+  - name: Health
+    description: Health check service
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Mengecek apakah notification service berjalan normal.
+      responses:
+        '200':
+          description: Service sehat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: notification-service
+      required:
+        - status
+        - service

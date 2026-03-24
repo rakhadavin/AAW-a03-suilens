@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  title: SuiLens Catalog Service API
+  version: 1.0.0
+  description: API untuk mengambil data katalog lensa pada SuiLens.
+servers:
+  - url: http://localhost:3001
+tags:
+  - name: Catalog
+    description: Endpoint katalog lensa
+  - name: Health
+    description: Health check service
+
+paths:
+  /api/lenses:
+    get:
+      tags:
+        - Catalog
+      summary: Get all lenses
+      description: Mengambil seluruh data lensa dari catalog service.
+      responses:
+        '200':
+          description: Daftar lensa berhasil diambil
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lens'
+
+  /api/lenses/{id}:
+    get:
+      tags:
+        - Catalog
+      summary: Get lens by ID
+      description: Mengambil detail satu lensa berdasarkan ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID lensa
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detail lensa berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lens'
+        '404':
+          description: Lens not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Mengecek apakah catalog service berjalan normal.
+      responses:
+        '200':
+          description: Service sehat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+components:
+  schemas:
+    Lens:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        modelName:
+          type: string
+        manufacturerName:
+          type: string
+        minFocalLength:
+          type: number
+        maxFocalLength:
+          type: number
+        maxAperture:
+          type: string
+        mountType:
+          type: string
+        dayPrice:
+          type: string
+          example: "450000.00"
+        weekendPrice:
+          type: string
+          example: "800000.00"
+        description:
+          type: string
+      required:
+        - id
+        - modelName
+        - manufacturerName
+        - minFocalLength
+        - maxFocalLength
+        - maxAperture
+        - mountType
+        - dayPrice
+        - weekendPrice
+        - description
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: catalog-service
+      required:
+        - status
+        - service
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
