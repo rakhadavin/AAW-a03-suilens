@@ -64,7 +64,8 @@ function clearNotifications() {
 }
 
 onMounted(() => {
-  socket = new WebSocket("ws://localhost:3003/ws");
+  const wsHost = window.location.hostname;
+  socket = new WebSocket(`ws://${wsHost}:30033/ws`);
 
   socket.onopen = () => {
     console.log("WebSocket connected");

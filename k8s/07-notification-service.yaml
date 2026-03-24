@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: suilens-2206082650
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: rakhadavinalamsyah/suilens-notification:latest
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              value: postgres://postgres:postgres@notification-db:5432/suilens_notification
+            - name: RABBITMQ_URL
+              value: amqp://guest:guest@rabbitmq:5672
+          ports:
+            - containerPort: 3003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: suilens-2206082650
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - port: 3003
+      targetPort: 3003
+      nodePort: 30033
+  type: NodePort
