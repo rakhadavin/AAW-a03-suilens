@@ -1,5 +1,22 @@
 # suilens-microservice-tutorial
 
+Run all setup in one time
+```bash
+chmod +x setup-script-all.sh
+./setup-script-all.sh
+```
+or using powershell
+
+```powershell
+.\setup-script-all copy.ps1
+```
+
+
+or if u want to run it one-by-one:
+
+
+
+
 Microservices tutorial implementation for Assignment 1 Part 2.2.
 
 ## Run
