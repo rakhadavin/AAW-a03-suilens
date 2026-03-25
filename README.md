@@ -63,16 +63,30 @@ docker compose down
 
 1. Keberhasilan membuat pod worker 
 Saya hanya menggunakan 1 worker dikarenakan masalah storage.
+![bukti SS](./public/images/pod_running.png)
 
-2. Implementasi Dokumentasi API
+2. Implementasi Dokumentasi API (file yaml openapi masing-masing service tertaut dalam folder docs)
 - Catalog Service
+![bukti SS](./public/images/swagger_catalog.png)
+
 - Order Service
+![bukti SS](./public/images/swagger_order.png)
+
 - Notification Service
+![bukti SS](./public/images/swagger_notification.png)
+
 
 3. Websocket Test (smoke test)
-4. Cluster Deployment
-5. kubectl get pods –o wide
+![bukti SS](./public/images/websocket_notification.png)
+![bukti SS](./public/images/smoke_test_local.png)
+
+4. Cluster Deployment (kubectl get pods –o wide)
+![bukti SS](./public/images/pods.png)
+![bukti SS](./public/images/pods_vm.png)
+
 6. Smoke Test using Ingress Nginx
+![bukti SS](./public/images/smoke_test1.png)
+![bukti SS](./public/images/smoke_test2.png)
 
 ```bash
 curl http://suilens.local:30465/api/lenses | jq
@@ -90,3 +104,5 @@ curl -s -X POST http://suilens.local:30465/api/orders \
 
 kubectl logs deployment/notification-service -n suilens-2206082650 --tail=20
 ```
+
+Saya menggunakan AI untuk mengeksplorasi perbedaan konfigurasi antara VM dan tutorial, untuk melakukan debug dan pemahaman konsep mendalam. Beberapa file hasil modifikasi AI terutama pada bagian konfigurasi yang merupakan realisasi ide saya untuk menyatukan beberapa konfigurasi untuk dijalankan dalam satu waktu.
