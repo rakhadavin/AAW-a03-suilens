@@ -72,7 +72,7 @@ onMounted(() => {
   // Use this code if you running using nginx ingress
 const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
 const wsHost = window.location.host;
-socket = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
+socket = new WebSocket(`${wsProtocol}//${wsHost}:30033/ws`);
 
   socket.onopen = () => {
     console.log("WebSocket connected");
