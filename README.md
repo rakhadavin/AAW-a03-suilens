@@ -39,7 +39,6 @@ docker compose up --build -d
 ```bash
 curl http://localhost:3001/api/lenses | jq
 LENS_ID=$(curl -s http://localhost:3001/api/lenses | jq -r '.[0].id')
-
 curl -X POST http://localhost:3002/api/orders \
   -H "Content-Type: application/json" \
   -d '{
@@ -58,3 +57,18 @@ docker compose logs notification-service --tail 20
 ```bash
 docker compose down
 ```
+
+
+# Bukti Tugas
+
+1. Keberhasilan membuat pod worker 
+Saya hanya menggunakan 1 worker dikarenakan masalah storage.
+
+2. Implementasi Dokumentasi API
+- Catalog Service
+- Order Service
+- Notification Service
+
+3. Websocket Test (smoke test)
+4. Cluster Deployment
+5. kubectl get pods –o wide
