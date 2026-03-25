@@ -72,3 +72,21 @@ Saya hanya menggunakan 1 worker dikarenakan masalah storage.
 3. Websocket Test (smoke test)
 4. Cluster Deployment
 5. kubectl get pods –o wide
+6. Smoke Test using Ingress Nginx
+
+```bash
+curl http://suilens.local:30465/api/lenses | jq
+LENS_ID=$(curl -s http://suilens.local:30465/api/lenses | jq -r '.[0].id')
+
+curl -s -X POST http://suilens.local:30465/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "Rakha Davin",
+    "customerEmail": "2206082650@gmail.com",
+    "lensId": "'"$LENS_ID"'",
+    "startDate": "2025-03-01",
+    "endDate": "2025-03-05"
+  }' | jq
+
+kubectl logs deployment/notification-service -n suilens-2206082650 --tail=20
+```

@@ -64,8 +64,15 @@ function clearNotifications() {
 }
 
 onMounted(() => {
-  const wsHost = window.location.hostname;
-  socket = new WebSocket(`ws://${wsHost}:30033/ws`);
+  //Uncomment this if you running using local host
+  // const wsHost = window.location.hostname;
+  // socket = new WebSocket(`ws://${wsHost}:30033/ws`);
+
+
+  // Use this code if you running using nginx ingress
+const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+const wsHost = window.location.host;
+socket = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
 
   socket.onopen = () => {
     console.log("WebSocket connected");
